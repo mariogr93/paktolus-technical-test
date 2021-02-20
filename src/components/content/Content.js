@@ -15,20 +15,7 @@ import Paper from "@material-ui/core/Paper";
 
 import Game from "./Game";
 
-function createData(id, name, result, time) {
-  return { id, name, result, time };
-}
-
-const rows = [
-  createData("0", "mario", "120", "10:50"),
-  createData("1", "jose", "80", "10:50"),
-  createData("2", "pedro", "95", "10:50"),
-  createData("3", "marcos", "102", "10:50"),
-  createData("4", "luis", "30", "10:50"),
-  createData("5", "ariel", "42", "10:50"),
-  createData("6", "matias", "98", "10:50"),
-  createData("7", "arnold", "122", "10:50"),
-];
+import { gameHistoryStorage } from "../../storage/UseLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,13 +24,17 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100vh",
   },
   main: {
-    marginTop: theme.spacing(8),
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(10),
+    marginBottom: theme.spacing(10),
+    display: "flex",
+    justifyContent: "center",
   },
   table: {
     minWidth: 650,
   },
 }));
+
+const gameHistory = gameHistoryStorage();
 
 function Content() {
   const classes = useStyles();
@@ -61,8 +52,8 @@ function Content() {
     <div className={classes.root}>
       <CssBaseline />
       <Container component="main" className={classes.main} maxWidth="sm">
-        <Button onClick={startGame} color="inherit">
-          START GAME!!
+        <Button onClick={startGame} variant="contained" color="secondary">
+          PLAY TIME!!
         </Button>
         <Game isOpen={openModal} closeModal={endGame} />
       </Container>
@@ -74,18 +65,16 @@ function Content() {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="center">ID</TableCell>
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Result</TableCell>
               <TableCell align="center">Time</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell align="center">{row.id}</TableCell>
-                <TableCell align="center">{row.name}</TableCell>
-                <TableCell align="center">{row.result}</TableCell>
+            {gameHistory.map((row) => (
+              <TableRow key={row.time}>
+                <TableCell align="center">{row.username}</TableCell>
+                <TableCell align="center">{`${row.result.firstNumber} ${row.result.secondNumber} ${row.result.thirdNumber}`}</TableCell>
                 <TableCell align="center">{row.time}</TableCell>
               </TableRow>
             ))}
