@@ -11,6 +11,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Login from "./Login";
+import SaveLocalStorage from "../../storage/UseLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,10 +54,13 @@ function Header() {
     handleClose();
     dispatch({ type: "LOGOUT" });
   };
-  const handleLogin = () => {
+  const handleLogin = (username) => {
     dispatch({
       type: "LOGIN",
-      payload: { user: { id: "5", name: "mario" }, isAuthenticated: true },
+      payload: {
+        user: SaveLocalStorage({ username }, { type: "LOGIN", key: "USER" }),
+        isAuthenticated: true,
+      },
     });
   };
   return (
@@ -82,7 +86,7 @@ function Header() {
               }}
             >
               <Typography style={{ alignSelf: "center" }} variant="h6">
-                ${state.money.toFixed(2)}
+                ${state.user.money.toFixed(2)}
               </Typography>
               <IconButton
                 aria-label="account of current user"
@@ -108,6 +112,7 @@ function Header() {
                 open={open}
                 onClose={handleClose}
               >
+                <MenuItem>User: {state.user.username}</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
