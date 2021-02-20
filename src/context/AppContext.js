@@ -12,10 +12,10 @@ export function useAppContext() {
 
 const initialState = {
   user: {
-    id: "",
-    name: "",
+    username: "",
+    money: 99.99,
   },
-  money: 99.99,
+
   gameHistory: [],
   isAuthenticated: false,
 };
@@ -31,11 +31,25 @@ function reducer(state, action) {
     case "LOGOUT":
       return initialState;
     case "INCREMENT_MONEY":
-      return { ...state, money: state.money + action.payload };
+      return {
+        ...state,
+        user: {
+          username: state.user.username,
+
+          money: state.user.money + action.payload,
+        },
+      };
     case "DECREMENT_MONEY":
-      return { ...state, money: state.money - 1 };
+      return {
+        ...state,
+        user: {
+          username: state.user.username,
+
+          money: state.user.money - 1,
+        },
+      };
     case "SET_GAME_HISTORY":
-      return { ...state, gameHistory: [...state.gameHistory, action.payload] };
+      return { ...state, gameHistory: [...action.payload] };
     default:
       throw new Error(`Action type ${action.type} is not found`);
   }
