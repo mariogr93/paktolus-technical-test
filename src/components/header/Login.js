@@ -1,44 +1,78 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import CustomModal from "../modal/Modal";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch",
-    },
-  },
-}));
+const root = {
+  width: "250px",
+  height: "auto",
+  display: "flex",
+  flexFlow: "column",
+  justifyContent: "center",
+  alignItems: "center",
+};
 
 function Login(props) {
-  const classes = useStyles();
-  function onButtonClick() {
-    props.loginIn();
-    props.closeModal();
+  const [userName, setUserName] = useState("");
+  const [error, setError] = useState(false);
+
+  function handleChange(e) {
+    setUserName(e.target.value);
+    if (userName !== "") {
+      setError(false);
+    }
+  }
+
+  function onSubmit() {
+    if (userName !== "") {
+      props.loginIn(userName);
+      props.closeModal();
+    } else {
+      setError(true);
+    }
   }
   return (
     <CustomModal open={props.isOpen}>
-      <Typography variant="h2">LOGIN</Typography>
-      <form className={classes.root} noValidate autoComplete="off">
-        <Typography variant="h6">Username</Typography>
-        <TextField id="username-input" label="Username" type="text" />
-        <br />
-        <br />
-        <Typography variant="h6">Password</Typography>
+      <div style={root}>
+        <Typography
+          style={{ textAlign: "center", margin: "30px" }}
+          variant="h2"
+        >
+          LOGIN
+        </Typography>
+
+        <Typography
+          style={{
+            margin: "10px",
+          }}
+          variant="h6"
+        >
+          Username
+        </Typography>
+
         <TextField
-          id="password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
+          style={{
+            margin: "10px",
+          }}
+          id="username-input"
+          placeholder="User name"
+          variant="outlined"
+          onChange={handleChange}
         />
-        <Button onClick={onButtonClick} color="inherit">
+        {error && <span style={{ color: "red" }}>introduzca un nombre</span>}
+
+        <Button
+          style={{
+            margin: "20px",
+          }}
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={onSubmit}
+        >
           Get me in!
         </Button>
-      </form>
-      <span>123</span>
+      </div>
     </CustomModal>
   );
 }
