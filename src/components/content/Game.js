@@ -5,6 +5,8 @@ import CustomModal from "../modal/Modal";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { useAppContext } from "../../context/AppContext";
+import SaveLocalStorage from "../../storage/UseLocalStorage";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
@@ -23,14 +25,22 @@ function Game(props) {
   const [thirdNumber, setThirdNumber] = useState(0);
   const { state, dispatch } = useAppContext();
 
-  console.log(state.money);
-
   function getRandom() {
-    dispatch({ type: "DECREMENT_MONEY" });
     setFirstNumber(random());
     setSecondNumber(random());
     setThirdNumber(random());
+
+    if (!state.isAuthenticated) {
+      SaveLocalStorage(
+        { username: "noUser", money: 99.99 },
+        { type: "MONEY", key: "USER" }
+      );
+    } else {
+      SaveLocalStorage(state.user, { type: "MONEY", key: "USER" });
+    }
+    dispatch({ type: "DECREMENT_MONEY" });
     matchChecker();
+    saveToTable();
   }
 
   function debug() {
@@ -63,15 +73,31 @@ function Game(props) {
   }
 
   function saveToTable() {
-    dispatch({
-      type: "SET_GAME_HISTORY",
-      payload: {
-        id: state.user.id,
-        name: state.user.name,
-        result: { firstNumber, secondNumber, thirdNumber },
-        time: Date.now(),
-      },
-    });
+    if (!state.isAuthenticated) {
+      dispatch({
+        type: "SET_GAME_HISTORY",
+        payload: SaveLocalStorage(
+          {
+            username: "noUser",
+            result: { firstNumber, secondNumber, thirdNumber },
+            time: Date.now(),
+          },
+          { type: "TABLE_DATA", key: "GAME-HISTORY" }
+        ),
+      });
+    } else {
+      dispatch({
+        type: "SET_GAME_HISTORY",
+        payload: SaveLocalStorage(
+          {
+            username: state.user.username,
+            result: { firstNumber, secondNumber, thirdNumber },
+            time: Date.now(),
+          },
+          { type: "TABLE_DATA", key: "GAME-HISTORY" }
+        ),
+      });
+    }
   }
 
   return (
