@@ -14,7 +14,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 import Game from "./Game";
-
 import { gameHistoryStorage } from "../../storage/UseLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,19 +33,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const gameHistory = gameHistoryStorage();
-
 function Content() {
   const classes = useStyles();
   const [openModal, setOpenModal] = useState(false);
 
+  const [tableState, setTableState] = useState(gameHistoryStorage());
   const startGame = () => {
     setOpenModal(true);
   };
 
   const endGame = () => {
+    setTableState(gameHistoryStorage());
     setOpenModal(false);
   };
+
+  function sortByName(action) {
+    const comparison = action == "byName" ? "username" : "time";
+    setTableState((oldTableState) => {
+      const newTableState = oldTableState.sort((a, b) => {
+        if (a[comparison] > b[comparison]) {
+          return 1;
+        }
+        if (a[comparison] < b[comparison]) {
+          return -1;
+        }
+        return 0;
+      });
+      return [...newTableState];
+    });
+  }
 
   return (
     <div className={classes.root}>
@@ -65,13 +80,27 @@ function Content() {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="center">Name</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => {
+                  sortByName("byName");
+                }}
+              >
+                Name
+              </TableCell>
               <TableCell align="center">Result</TableCell>
-              <TableCell align="center">Time</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => {
+                  sortByName("byTime");
+                }}
+              >
+                Time
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {gameHistory.map((row) => (
+            {tableState.map((row) => (
               <TableRow key={row.time}>
                 <TableCell align="center">{row.username}</TableCell>
                 <TableCell align="center">{`${row.result.firstNumber} ${row.result.secondNumber} ${row.result.thirdNumber}`}</TableCell>
